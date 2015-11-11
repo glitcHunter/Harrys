@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import unittest
 
 
@@ -13,10 +14,24 @@ class NewVisitorTest(unittest.TestCase):
 
     def test_can(self):
         self.browser.get('http://localhost:8000')
+        self.assertIn('lista', self.browser.title)
+        header_text =self.browser.find_element_by_tag_name("h1").text
+        self.assertIn('lista',header_text)
 
-        self.assertEqual('listy', self.browser.title)
-		
-        self.fail('koniec')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertEqual(inputbox.get_attribute('placeholder'),'wpisz rzeczy do zrobienia')
+
+        inputbox.send_keys('buy')
+
+        inputbox.send_keys(Keys.ENTER)
+
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(row.text =='1: buy' for row in rows)
+        )
+
+        self.fail('zalończenie testu')
 
 if __name__ == '__main__':
     unittest.main()
